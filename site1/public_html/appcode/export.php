@@ -4,6 +4,7 @@ require_once ($server_inner_path."appcode/data/common.php");
 require_once ($server_inner_path."appcode/data/roles_linked.php");
 require_once ($server_inner_path."appcode/data/roles_main.php");
 require_once ($server_inner_path."appcode/formatters.php");
+require_once ($server_inner_path."appcode/possible_values.php");
 
 function get_excel_writer ($excel, $mode)
 {
@@ -196,6 +197,14 @@ function get_fields_before ()
 					'sname'	=>	"Пол",
 					'type'	=>	"select",
 					'values'	=>	Array(Array('1','мужской'),Array('2','женский')),
+					'read'	=>	1,
+					'write'	=>	100000,
+			),
+			Array(
+					'name'	=>	"medic",
+					'sname'	=>	"Мед.кв.",
+					'type'	=>	"select",
+					'values'	=>	get_possible_values ('medic'),
 					'read'	=>	1,
 					'write'	=>	100000,
 			),
