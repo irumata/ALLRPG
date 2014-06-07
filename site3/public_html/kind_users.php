@@ -1,6 +1,5 @@
 ﻿<?php
 require_once ($server_inner_path."appcode/formatters.php");
-if($_SESSION["user_id"]!='') {
 
 	if($object>0) {
 		$id=$object;
@@ -1034,5 +1033,4 @@ if($_SESSION["user_id"]!='') {
 
 		$content.='</div></center>';
 	}
-}
 ?>
