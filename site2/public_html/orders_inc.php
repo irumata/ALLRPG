@@ -775,6 +775,9 @@ $rolefields[]=Array(
 				err_red("Заблокировано повторное сохранение комментария.");
 			}
 			else {
+        $result=mysql_query("SELECT * from {$prefix}roles where id=".$id." and site_id=".$_SESSION["siteid"]);
+				$a=mysql_fetch_array($result);
+				
         $targets = get_notification_targets($_SESSION["siteid"], $a["locat"], 'signtocomments', $_SESSION["user_sid"]);
         $target_emails = array();
         foreach ($targets as $target)
@@ -783,8 +786,7 @@ $rolefields[]=Array(
         }
         
 				require_once($server_inner_path.$direct."/classes/base_mails.php");
-				$result=mysql_query("SELECT * from {$prefix}roles where id=".$id." and site_id=".$_SESSION["siteid"]);
-				$a=mysql_fetch_array($result);
+				
 				if($comment_type==1 && $a["todelete"]!=1) {
 					mysql_query("INSERT into {$prefix}rolescomments (site_id, role_id, user_id, type, content, date) values (".$_SESSION["siteid"].", ".$id.", ".$_SESSION["user_id"].", ".$comment_type.", '".$comment_content."', ".time().")");
 					$comment_id=mysql_insert_id($link);

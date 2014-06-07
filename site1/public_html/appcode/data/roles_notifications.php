@@ -34,7 +34,6 @@ function get_notification_targets($site_id, $location_id, $signmode, $author_to_
 				WHERE 
           ar.site_id=$site_id 
           AND (ar.rights=1 OR ar.rights=2) 
-          AND (locations='-' OR locations='' OR locations LIKE '%-0-%' OR locations LIKE '%-$location_id-%') 
           AND ($notification_rights_condition) 
           AND $signmode='1' 
           AND ar.user_id!=$author_to_exclude");
