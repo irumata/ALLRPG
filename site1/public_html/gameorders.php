@@ -3,6 +3,8 @@ include_once("db.inc");
 require_once($server_inner_path.$direct."/classes/classes_objects.php");
 require_once($server_inner_path."classes_objects_allrpg.php");
 require_once ($server_inner_path."appcode/data/roles_linked.php");
+require_once ($server_inner_path."appcode/formatters.php");
+require_once ($server_inner_path."appcode/possible_values.php");
 
 start_mysql();
 # Установление соединения с MySQL-сервером
@@ -17,6 +19,25 @@ if($css=='') {
 	$css='http://www.allrpg.info/main2.css';
 }
 $include=encode($_GET["include"]);
+
+function name_format($row)
+{
+  return name_public_compact_formatter_row($row, 'uselink,usetooltip');
+}
+
+function status_format ($row)
+{
+  $status = $row['status'];
+  $values = get_possible_values('status');
+  foreach ($values as $value)
+  {
+    if ($value[0] == $status)
+    {
+      return $value[1];
+    }
+  }
+  return $status;
+}
 
 if($game!='')
 {
@@ -46,12 +67,10 @@ if($game!='')
 		$orders=encode($_GET["orders"]);
 	}
 
-	$showonlyacceptedroles=false;
 	$result=mysql_query("SELECT * FROM ".$prefix."sites WHERE id=".$subobj);
 	$a=mysql_fetch_array($result);
-	if($a["showonlyacceptedroles"]=='1') {
-		$showonlyacceptedroles=true;
-	}
+	$showonlyacceptedroles = $a["showonlyacceptedroles"]=='1';
+	$acceptedroles_condition = $showonlyacceptedroles ? " AND status=3" : '';
 
 	$result=mysql_query("SELECT COUNT(id) FROM ".$prefix."rolevacancy WHERE site_id=".$subobj);
 	$a=mysql_fetch_array($result);
@@ -85,7 +104,7 @@ if($game!='')
 		// заявки
 		if($id>0) {
 			if($showonlyacceptedroles) {
-				$result=mysql_query("SELECT * FROM ".$prefix."roles where id=".$id." and todelete!=1 and todelete2!=1 and status=3 and site_id=".$subobj.($locat>0?' and locat='.$locat:''));
+				$result=mysql_query("SELECT * FROM ".$prefix."roles where id=".$id." and todelete!=1 and todelete2!=1 $acceptedroles_condition and site_id=".$subobj.($locat>0?' and locat='.$locat:''));
 			}
 			else {
 				$result=mysql_query("SELECT * FROM ".$prefix."roles where id=".$id." and todelete!=1 and todelete2!=1 and site_id=".$subobj.($locat>0?' and locat='.$locat:''));
@@ -139,7 +158,7 @@ if($game!='')
 				else {
 					$content2.='<hr>';
 				}
-				$content2.='<b>Игрок</b>: '.usname($e,true,true).'<br>';
+				$content2.='<b>Игрок</b>: '.name_format($e,true,true).'<br>';
 				if($a["locat"]!='' && $d["name"]!='' && $havelocats) {
 					$content2.='<b>Локация / команда</b>: '.locatpath($d["id"]).'<br>';
 				}
@@ -152,18 +171,7 @@ if($game!='')
 				}
 				$content2.='<br>';
 				$content2.='<b>Статус</b>: ';
-				if($a["status"]==1) {
-					$content2.='подана';
-				}
-				elseif($a["status"]==2) {
-					$content2.='обсуждается';
-				}
-				elseif($a["status"]==3) {
-					$content2.='принята';
-				}
-				elseif($a["status"]==4) {
-					$content2.='отклонена';
-				}
+				$content2 .= status_format ($a);
 				$content2.='<br>';
 				if($a["vacancy"]!='' && $f["name"]!='') {
 					$content2.='<b>Роль</b>: <a href="'.$server_absolute_path.'gameorders.php?game='.$subobj.'&id='.$f["id"].'&css='.$css.'">'.decode($f["name"]).'</a><br>';
@@ -232,7 +240,7 @@ if($game!='')
 		else {
 			$result=mysql_query("SELECT * FROM ".$prefix."users u, ".$prefix."roles r where u.id = r.player_id AND r.site_id=".$subobj.($locat>0?' AND r.locat='.$locat:''));
 			while($a = mysql_fetch_array($result)) {
-				$allusers[]=Array($a["id"],usname($a,true));
+				$allusers[]=Array($a["id"],name_format($a));
 			}
 			foreach ($allusers as $key => $row) {
 				$allusers_sort[$key]  = strtolower($row[1]);
@@ -807,10 +815,10 @@ $content2 .= '</td>';
 		                    		$content2.='<tr>';
 		                    	}
 								if($a["kolvo"]>1 || $b[0]>1) {
-									$content2.='<td>'.decode($c["sorter"]).'</td><td>'.usname($d,true,true).'</td></tr>';
+									$content2.='<td>'.decode($c["sorter"]).'</td><td>'.name_format($d).'</td></tr>';
 								}
 								else {
-									$content2.='<td colspan=2>'.usname($d,true,true).'</td></tr>';
+									$content2.='<td colspan=2>'.name_format($d).'</td></tr>';
 								}
 								$newstring=true;
 							}
@@ -833,10 +841,10 @@ $content2 .= '</td>';
 			                    		$content2.='<tr>';
 			                    	}
 									if($a["kolvo"]>1) {
-										$content2.='<td>'.decode($c["sorter"]).'</td><td>'.usname($d,true,true).'?</td></tr>';
+										$content2.='<td>'.decode($c["sorter"]).'</td><td>'.name_format($d).'?</td></tr>';
 									}
 									else {
-										$content2.='<td colspan=2>'.usname($d,true,true).'?</td></tr>';
+										$content2.='<td colspan=2>'.name_format($d).'?</td></tr>';
 									}
 									$newstring=true;
 								}
