@@ -1,5 +1,5 @@
 ﻿<?php
-function createsite($usetemp) {
+function createsite() {
 	global
 		$dynrequest,
 		$link,
@@ -23,14 +23,7 @@ function createsite($usetemp) {
 		dynamic_err_one('error',"Пользователь не найден.");
     }
 
-    if(($usetemp==0 || $usetemp==1) && encode_to_cp1251($_REQUEST["name"])!='') {
-    	$name=strtolower(encode_to_cp1251($_REQUEST["name"]));
-    }
-    elseif($usetemp==0 || $usetemp==1) {
-    	dynamic_err_one('error',"Не заполнено обязательное поле «Субдомен».",array('name'));
-    }
-
-    if(encode_to_cp1251($_REQUEST["name"])!='' && $usetemp==2) {
+    if(encode_to_cp1251($_REQUEST["name"])!='') {
     	$name=strtolower(encode_to_cp1251($_REQUEST["name"]));
     }
 
@@ -76,81 +69,18 @@ function createsite($usetemp) {
     	$date=time();
     }
 
-	if($usetemp==0 || $usetemp==1) {
-  		$handle2 = @fopen($server_inner_path.$admin.'/update/index.php', "r");
-  		if ($handle2 === false) {
-  			dynamic_err_one('error',"Не удается открыть index.php для загрузки на субдомен.");
-  		}
-  		@fclose($handle2);
-  		$handle2 = @fopen($server_inner_path.$admin.'/update/up.gif', "r");
-  		if ($handle2 === false) {
-  			dynamic_err_one('error',"Не удается открыть up.gif для загрузки на субдомен.");
-  		}
-  		@fclose($handle2);
-  		$handle2 = @fopen($server_inner_path.$admin.'/update/down.gif', "r");
-  		if ($handle2 === false) {
-  			dynamic_err_one('error',"Не удается открыть down.gif для загрузки на субдомен.");
-  		}
-  		@fclose($handle2);
-
-		if(!preg_match("/^[a-zA-Z0-9_\-]{3,}$/", $name)) {
-			dynamic_err_one('error',"Некорректно заполнено имя субдомена. В имени должно быть не менее трех символов: латинских букв, цифр, символ «_» или символ «-».",array('name'));
-		}
-
-  		if(file_exists($leadc1.$name.$leadc2)) {
-  			dynamic_err_one('error',"Такой субдомен уже занят. Пожалуйста, выберите другое название или обратитесь к администрации.",array('name'));
-  		}
-	}
-
 	if($dynrequest==1) {
 		dynamic_err(array(),'submit');
 	}
 
-	if($usetemp==0 || $usetemp==1) {
-		if(!mkdir($leadc1.$name.$leadc2, 0777)) {
-			dynamic_err_one('error',"Не получилось создать субдомен.");
-		}
-		else {
-			chmod($leadc1.$name.$leadc2, 0777);
-		}
-		if(!copy($server_inner_path.$admin.'/update/index.php', $leadc1.$name.$leadc2.'index.php')) {
-			dynamic_err_one('error',"Не получилось скопировать index.php");
-		}
-		else {
-			chmod($leadc1.$name.$leadc2.'index.php', 0777);
-		}
-		if(!copy($server_inner_path.$admin.'/update/up.gif', $leadc1.$name.$leadc2.'up.gif')) {
-			dynamic_err_one('error',"Не получилось скопировать up.gif");
-		}
-		else {
-			chmod($leadc1.$name.$leadc2.'up.gif', 0777);
-		}
-		if(!copy($server_inner_path.$admin.'/update/down.gif', $leadc1.$name.$leadc2.'down.gif')) {
-			dynamic_err_one('error',"Не получилось скопировать down.gif");
-		}
-		else {
-			chmod($leadc1.$name.$leadc2.'down.gif', 0777);
-		}
-		if(!copy($server_inner_path.$admin.'/update/.htaccess', $leadc1.$name.$leadc2.'.htaccess')) {
-			dynamic_err_one('error',"Не получилось скопировать .htaccess");
-		}
-		else {
-			chmod($leadc1.$name.$leadc2.'.htaccess', 0777);
-		}
-	}
-
 	require_once($server_inner_path.$direct."/classes/base_mails.php");
 
-	mysql_query("INSERT INTO ".$prefix."orders (author, usetemp, name, title, datestart, datefinish, region, em, blog, blogname, description, date) values (".$author.", ".$usetemp.", '".$name."', '".$title."', '".$datestart."', '".$datefinish."', ".$region.", '".$em."', '".$blog."', '".$blogname."', '".$description."', ".$date.")");
+	mysql_query("INSERT INTO ".$prefix."orders (author, usetemp, name, title, datestart, datefinish, region, em, blog, blogname, description, date) values ($author, 2, '".$name."', '".$title."', '".$datestart."', '".$datefinish."', ".$region.", '".$em."', '".$blog."', '".$blogname."', '".$description."', ".$date.")");
 	$inz=mysql_insert_id($link);
 	mysql_query("UPDATE ".$prefix."orders SET sid=".$inz." WHERE id=".$inz);
 
-	if($usetemp==0 || $usetemp==1) {
-		mysql_query("INSERT INTO `".$prefix."sites` (sio, path, title, usetemp, rolesubs, sorter, money, status, status2, allspace, datestart, datefinish) VALUES (".$inz.", '".$name."', '".$title."', ".$usetemp.", 'Добрый день!&lt;br /&gt;&lt;br&gt;&lt;br /&gt;&lt;br&gt;&lt;br /&gt;&lt;br&gt;&lt;br /&gt;&lt;br&gt;С уважением,&lt;br /&gt;&lt;br&gt;&nbsp;&nbsp;&nbsp; мастерская группа проекта «".$title."».', 0, '0р.', 1, 1, 104857600, '".$datestart."', '".$datefinish."');");
-	}
-	else {
-		mysql_query("INSERT INTO `".$prefix."sites` (sio, path2, title, usetemp, rolesubs, sorter, money, status, status2, allspace, datestart, datefinish) VALUES (".$inz.", '".$name."', '".$title."', ".$usetemp.", 'Добрый день!&lt;br /&gt;&lt;br&gt;&lt;br /&gt;&lt;br&gt;&lt;br /&gt;&lt;br&gt;&lt;br /&gt;&lt;br&gt;С уважением,&lt;br /&gt;&lt;br&gt;&nbsp;&nbsp;&nbsp; мастерская группа проекта «".$title."».', 0, '0р.', 1, 1, 104857600, '".$datestart."', '".$datefinish."');");
-	}
+		mysql_query("INSERT INTO `".$prefix."sites` (sio, path2, title, usetemp, rolesubs, sorter, money, status, status2, allspace, datestart, datefinish) VALUES (".$inz.", '".$name."', '".$title."', 2, 'Добрый день!&lt;br /&gt;&lt;br&gt;&lt;br /&gt;&lt;br&gt;&lt;br /&gt;&lt;br&gt;&lt;br /&gt;&lt;br&gt;С уважением,&lt;br /&gt;&lt;br&gt;&nbsp;&nbsp;&nbsp; мастерская группа проекта «".$title."».', 0, '0р.', 1, 1, 104857600, '".$datestart."', '".$datefinish."');");
+	
 	$prefix2=mysql_insert_id($link);
 
 	$result2=mysql_query("SELECT * from ".$prefix."temps limit 0,1");
@@ -215,31 +145,7 @@ function createsite($usetemp) {
 	$myname=usname($a,true);
 	$myemail=decode($a["em"]);
 	$contactemail="project@allrpg.info";
-	if($usetemp==0) {
-		$subject='Новый проект на allrpg.info';
-		$message='Пользователь '.$myname.' завел новый проект. Пожалуйста, проверьте правильность данных.
-Субдомен: '.$name.'
-Название проекта: '.$title.'
-Общее описание проекта:
 
-'.strip_tags(encode_to_cp1251($_REQUEST["description"])).'
-
-Дата начала: '.$datestart.'
-Дата окончания: '.$datefinish;
-	}
-	elseif($usetemp==1) {
-		$subject='Новый сайт на allrpg.info';
-		$message='Пользователь '.$myname.' завел новый сайт. Пожалуйста, проверьте правильность данных.
-Субдомен: '.$name.'
-Название проекта: '.$title.'
-Общее описание проекта:
-
-'.strip_tags(encode_to_cp1251($_REQUEST["description"])).'
-
-Дата начала: '.$datestart.'
-Дата окончания: '.$datefinish;
-	}
-	else {
 		$subject='Новая система заявок на allrpg.info';
 		$message='Пользователь '.$myname.' создал новую систему заявок. Пожалуйста, проверьте правильность данных.
 Внешний сайт: '.$name.'
@@ -250,7 +156,7 @@ function createsite($usetemp) {
 
 Дата начала: '.$datestart.'
 Дата окончания: '.$datefinish;
-	}
+	
 	send_mail($myname, $myemail, $contactemail, $subject, $message);
 }
 ?>
