@@ -216,7 +216,7 @@ if($_SESSION["user_id"]!='' && $workrights["site"]["orders"]) {
 		Array("Заявка успешно добавлена.","Заявка изменена.","Заявка удалена."),
 		Array(
 			'0'	=>	Array(
-				Array("status", "ASC", true, true, Array(2, Array(Array('1','подана'),Array('2','обсуждается'),Array('3','принята'),Array('4','отклонена')))),
+				Array("status", "ASC", true, true, Array(2, get_possible_values('status'))),
 				Array("locat", "ASC", true, true, Array(3, $prefix."roleslocat", "id", "name")),
 				Array("sorter", "ASC", true, true),
 				Array("player_id", "ASC", true, true, Array(2, $allusers2)),
@@ -434,7 +434,7 @@ if($_SESSION["user_id"]!='' && $workrights["site"]["orders"]) {
 				'name'	=>	"status",
 				'sname'	=>	"Статус",
 				'type'	=>	"select",
-				'values'	=>	Array(Array('1','подана'),Array('2','обсуждается'),Array('3','принята'),Array('4','отклонена')),
+				'values'	=> get_possible_values('status'),
 				'read'	=>	10,
 				'write'	=>	100,
 				'mustbe'	=>	true,
