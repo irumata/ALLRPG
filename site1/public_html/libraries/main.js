@@ -320,7 +320,7 @@
 	});
 
 	$(window).keydown(function(e){
-    	if(e.which === 9){ //tab
+    	if(e.which === 9 && !e.ctrlKey){ //tab
     		if(e.target.id!='login_global') {
 	    		e.preventDefault();
 	    		var selected = $('.selected');
