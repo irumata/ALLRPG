@@ -238,11 +238,11 @@ for($id=$from;$id<=$to;$id++) {
         $set[] = "'{$sql_values[$field]}'";
 			}
 			$values_string = implode (', ', $set);
-			$query="INSERT into allgames ($fields_string,gametype2,gametype3,mg,site,datestart,datefinish,datearrival,playernum,date,master,sid,wascancelled,moved) VALUES ($values_string, $query,
+			$query="INSERT into allgames ($fields_string,gametype3,mg,site,datestart,datefinish,datearrival,playernum,date,master,sid,wascancelled,moved) VALUES ($values_string, $query
 			'$cancelled', '$moved')";
 		}
 		
-		mysql_query($query);
+		db_query($query);
 		
 		if (!$theid)
 		{
