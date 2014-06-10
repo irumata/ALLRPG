@@ -1,5 +1,6 @@
 ﻿<?php
 	if($action=="exporttooffline") {
+		mysql_query('SET NAMES cp1251') or die(mysql_error());
 		$result=mysql_query("SELECT * from {$prefix}allrights2 where user_id=".$_SESSION['user_sid']." and site_id=".$_SESSION["siteid"]." and (rights=1 || rights=2)");
 		$a=mysql_fetch_array($result);
 		if($a["id"]!='' || $_SESSION["admin"]) {
@@ -11,14 +12,14 @@
 $sites_structure=Array(Array("allrpg_id",true),Array("title"),Array("sorter",true),Array("sorter2",true),Array("money"),Array("date",true));
 $sites[]=Array(
 '.$a["id"].',
-"'.$a["title"].'",
-'.$a["sorter"].',
-'.$a["sorter2"].',
+"'.htmlspecialchars($a["title"]).'",
+'.htmlspecialchars($a["sorter"]).',
+'.htmlspecialchars($a["sorter2"]).',
 "'.$a["money"].'",
 '.$a["date"].'
 );
 
-$roles_structure=Array(Array("allrpg_id",true),Array("site_id",true),Array("player"),Array("playerprofile"),Array("gender",true),Array("em"),Array("em2"),Array("phone2"),Array("icq"),Array("skype"),Array("jabber"),Array("birth"),Array("city"),Array("sickness"),array("medic"),Array("player_changed"),Array("team",true),Array("vacancy",true),Array("money"),Array("moneydone"),Array("sorter"),Array("locat",true),Array("allinfo"),Array("status",true),Array("todelete",true),Array("todelete2",true),Array("alltold"),Array("roleteamkolvo",true),Array("datesent"),Array("date",true));
+$roles_structure=Array(Array("allrpg_id",true),Array("site_id",true),Array("player"),Array("playerprofile"),Array("gender",true),Array("em"),Array("em2"),Array("phone2"),Array("icq"),Array("skype"),Array("jabber"),Array("birth"),Array("city"),Array("sickness"),Array("player_changed"),Array("team",true),Array("vacancy",true),Array("money"),Array("moneydone"),Array("sorter"),Array("locat",true),Array("allinfo"),Array("status",true),Array("todelete",true),Array("todelete2",true),Array("alltold"),Array("roleteamkolvo",true),Array("datesent"),Array("date",true));
 ';
 			$result=mysql_query("SELECT * from {$prefix}roles where site_id=".$_SESSION["siteid"]);
 			while($a=mysql_fetch_array($result)) {
@@ -29,7 +30,7 @@ $roles[]=Array(
 ';
 				$result2=mysql_query("SELECT * from {$prefix}users where id=".$a["player_id"]);
 				$b=mysql_fetch_array($result2);
-				$data.='"'.usname($b,true).'",
+				$data.='"'.htmlspecialchars(usname($b,true)).'",
 "'.$server_absolute_path_info.'users/'.$b["sid"].'/",
 '.$b["gender"].',
 "';
@@ -58,15 +59,15 @@ $roles[]=Array(
 				$c=mysql_fetch_array($result3);
 				$city=decode($c["name"]).' – '.$city;
 				$data.=$city.'",
-"'.$b["sickness"].'",
+"'.htmlspecialchars($b["sickness"]).'",
 "0",
-'.$a["team"].',
-'.$a["vacancy"].',
+'.htmlspecialchars($a["team"]).',
+'.htmlspecialchars($a["vacancy"]).',
 "'.$a["money"].'",
 "'.$a["moneydone"].'",
-"'.$a["sorter"].'",
+"'.htmlspecialchars($a["sorter"]).'",
 '.$a["locat"].',
-"'.$a["allinfo"].'",
+"'.htmlspecialchars($a["allinfo"]).'",
 '.$a["status"].',
 '.$a["todelete"].',
 '.$a["todelete2"].',
@@ -92,7 +93,7 @@ $rolescomments[]=Array(
 				$b=mysql_fetch_array($result2);
 				$data.='"'.usname($b,true).'",
 '.$a["type"].',
-"'.$a["content"].'",
+"'.htmlspecialchars($a["content"]).'",
 '.$a["date"].'
 );
 ';
@@ -106,10 +107,10 @@ $roleslocat_structure=Array(Array("allrpg_id",true),Array("parent",true),Array("
 $roleslocat[]=Array(
 '.$a["id"].',
 '.$a["parent"].',
-"'.$a["name"].'",
+"'.htmlspecialchars($a["name"]).'",
 '.$a["code"].',
-"'.$a["content"].'",
-"'.$a["description"].'",
+"'.htmlspecialchars($a["content"]).'",
+"'.htmlspecialchars($a["description"]).'",
 '.$_SESSION["siteid"].',
 '.$a["date"].'
 );
@@ -125,13 +126,13 @@ $rolevacancy[]=Array(
 '.$a["id"].',
 '.$a["locat"].',
 "'.$a["team"].'",
-"'.$a["name"].'",
+"'.htmlspecialchars($a["name"]).'",
 '.$a["code"].',
 '.$a["kolvo"].',
 '.$a["teamkolvo"].',
 "'.$a["maybetaken"].'",
 "'.$a["taken"].'",
-"'.$a["content"].'",
+"'.htmlspecialchars($a["content"]).'",
 '.$_SESSION["siteid"].',
 '.$a["date"].'
 );
@@ -146,13 +147,13 @@ $roleslinks_structure=Array(Array("allrpg_id",true),Array("parent",true),Array("
 $roleslinks[]=Array(
 '.$a["id"].',
 '.$a["parent"].',
-"'.$a["descr"].'",
+"'.htmlspecialchars($a["descr"]).'",
 '.$_SESSION["siteid"].',
 "'.$a["vacancies"].'",
 "'.$a["hideother"].'",
-"'.$a["name"].'",
+"'.htmlspecialchars($a["name"]).'",
 '.$a["type"].',
-"'.$a["content"].'",
+"'.htmlspecialchars($a["content"]).'",
 "'.$a["roles"].'",
 "'.$a["roles2"].'",
 '.$a["date"].'
@@ -168,13 +169,13 @@ $rolefields_structure=Array(Array("allrpg_id",true),Array("site_id",true),Array(
 $rolefields[]=Array(
 '.$a["id"].',
 '.$_SESSION["siteid"].',
-"'.$a["rolename"].'",
+"'.htmlspecialchars($a["rolename"]).'",
 "'.$a["roletype"].'",
 "'.$a["rolemustbe"].'",
 "'.$a["roledefault"].'",
 '.$a["rolerights"].',
-"'.$a["rolehelp"].'",
-"'.$a["rolevalues"].'",
+"'.htmlspecialchars($a["rolehelp"]).'",
+"'.htmlspecialchars($a["rolevalues"]).'",
 '.$a["rolecode"].',
 '.$a["rolewidth"].',
 '.$a["roleheight"].',
