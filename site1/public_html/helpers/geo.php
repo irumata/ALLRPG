@@ -1,31 +1,21 @@
 ﻿<?php
 include_once("../db.inc");
+require_once ($server_inner_path."appcode/data/common.php");
 
-$input = encode($_GET['input']);
+$input = intval($_GET['input']);
 $all = encode($_GET['all']);
 
-if(isset($input) && $input!='')
+if($input)
 {
 	start_mysql();
 	# Установление соединения с MySQL-сервером
 
-	if($input!='')
-	{
-		if($all==1) {
-			$result=mysql_query("SELECT * FROM ".$prefix."geography WHERE parent=".$input." order by name");
-		}
-		else {
-			$result=mysql_query("SELECT * FROM ".$prefix."geography WHERE parent=".$input." and parent!=2562 and id!=2562 order by name");
-		}
-		while($a = mysql_fetch_array($result))
-		{
-			$return_arr[]=Array('id'=>$a["id"],'value'=>$a["name"]);
-		}
-	}
-
-//	foreach($return_arr as $key=>$val) {
-//		$return_arr[$key]['value'] = iconv('cp1251','utf-8',$return_arr[$key]['value']);
-//	}
+  $remove_unknown_condition = ($all == 1) ? "1=1" : "parent!=2562 and id!=2562";
+  $result = db_query("SELECT * FROM {$prefix}geography WHERE parent=$input and $remove_unknown_condition order by name");
+  while($a = mysql_fetch_array($result))
+  {
+    $return_arr[]=Array('id'=>$a["id"],'value'=>$a["name"]);
+  }
 
 	header('Access-Control-Allow-Origin: *');
 	print(json_encode($return_arr));
