@@ -17,10 +17,10 @@ require_once($server_inner_path.$direct."/classes/classes_objects.php");
 require_once($server_inner_path.$direct."/classes/classes_rights.php");
 require_once($server_inner_path."classes_objects_allrpg.php");
 
-require_once("kind_".$kind.".php");
+include_once("kind_".$kind.".php");
 if($content2=='')
 {
-	echo("<html><body><script>document.location='".$server_absolute_path."error404.php';</script></body></html>");
+  require $server_inner_path . 'error404.php';
 	exit;
 }
 

@@ -40,7 +40,8 @@ require_once($server_inner_path."tile.inc");
 
 # Если в результате обработки контента нет, ошибка 404
 if($content2=='' || $content2=='<div class="narrow"></div>') {
-	redirect($server_absolute_path."error404.php");
+	require $server_inner_path . 'error404.php';
+	exit;
 }
 
 # Определяем общий шаблон
