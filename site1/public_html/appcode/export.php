@@ -288,6 +288,13 @@ function get_fields_before ()
 					'read'	=>	1,
 					'write'	=>	100000,
 			),
+				Array(
+          'name'	=>	"sickness",
+          'sname'	=>	"Медицинские противопоказания",
+          'type'	=>	"textarea",
+          'read'	=>	1,
+          'write'	=>	100000,
+      ),
 	 );
 }
 
