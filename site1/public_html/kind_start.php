@@ -62,6 +62,7 @@ if($_SESSION["user_id"]!='') {
   WHERE (t1.player_id = {$_SESSION['user_id']} OR (t1.new_player_sid = {$_SESSION['user_sid']} AND t1.new_player_deny !=1))
   AND t1.todelete !=1
   AND t2.status !=3
+  AND (t2.datefinish > CURDATE() OR t2.datestart > CURDATE() )
   ORDER  BY t1.id DESC");
 	while($a = mysql_fetch_array($result)) {
 		
