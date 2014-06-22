@@ -1,4 +1,6 @@
-﻿<?
+﻿<?php
+require_once ($server_inner_path."appcode/data/common.php");
+require_once ($server_inner_path."appcode/possible_values.php");
 $itsthemainpage=true;
 
 $nouserdata=false;
@@ -53,35 +55,25 @@ if($_SESSION["user_id"]!='') {
 	$content2.='<div class="tile_logged_section2">';
 
 	$counter=0;
-	$result=mysql_query("SELECT DISTINCT t1.status, t1.vacancy, t1.money, t1.locat, t1.id, t1.site_id, t1.allinfo, t1.sorter, t2.title, t2.path, t1.changed, t1.player_id FROM ".$prefix."roles t1 LEFT JOIN ".$prefix."sites t2 ON t2.id=t1.site_id WHERE ((t1.player_id=".$_SESSION['user_id']." and t2.status!=3) or (t1.new_player_sid=".$_SESSION["user_sid"]." and t1.new_player_deny!=1) or (t1.player_id=".$_SESSION['user_id']." and t1.id in (SELECT role_id FROM ".$prefix."rolescomments WHERE id not in (select comment_id from ".$prefix."rolescommentsread where user_id=".$_SESSION["user_id"].") and type!=2))) and t1.todelete!=1 and t2.status!=3 order by t1.id desc");
+	$result=db_query("
+	SELECT t1.status, t1.id, t1.sorter, t2.title 
+	FROM {$prefix}roles t1
+  INNER JOIN {$prefix}sites t2 ON t2.id = t1.site_id
+  WHERE (t1.player_id = {$_SESSION['user_id']} OR (t1.new_player_sid = {$_SESSION['user_sid']} AND t1.new_player_deny !=1))
+  AND t1.todelete !=1
+  AND t2.status !=3
+  ORDER  BY t1.id DESC");
 	while($a = mysql_fetch_array($result)) {
 		
 			$counter++;
-			$myorders2.='<a href="'.$server_absolute_path.'order/'.$a["id"].'/" title="';
-			$myorders2.='проект: '.decode($a["title"]).'; ';
-			$myorders2.='статус: ';
-			if($a["status"]==1) {
-				$myorders2.='подана';
+			$status_label =  get_label_from_id($a['status'], 'status');
+			$site_name = decode($a["title"]);
+			$name = trim(decode($a["sorter"]));
+			if (!$name)
+			{
+        $name = '<font color="red">(нет имени персонажа)</font>';
 			}
-			elseif($a["status"]==2) {
-				$myorders2.='обсуждается';
-			}
-			elseif($a["status"]==3) {
-				$myorders2.='принята';
-			}
-			elseif($a["status"]==4) {
-				$myorders2.='отклонена';
-			}
-			$myorders2.='">';
-			if(str_replace(' ','',decode($a["sorter"]))!='') {
-				$myorders2.=decode($a["sorter"]);
-			}
-			else {
-				$result615=mysql_query("SELECT * from ".$prefix."users where id=".$a["player_id"]);
-				$t=mysql_fetch_array($result615);
-				$myorders2.='<font color="red">('.usname($t,true).')</font>';
-			}
-			$myorders2.='</a><br>';
+			$myorders2.="<a href=\"{$server_absolute_path}order/{$a['id']}/\" title=\"$status_label - $site_name\">$name</a><br>";
 	}
 	if($counter>0) {
 		$myorders2='<a href="'.$server_absolute_path.'order/"><h3>Мои заявки на игры</h3></a></h3>'.$myorders2 . '<a href="'.$server_absolute_path.'order/">(Перейти на полный список)</a>';

@@ -1,7 +1,6 @@
 <?php
 // This file includes some labels for common fields
 
-
 function get_possible_values ($field)
 {
   switch ($field) {
@@ -12,6 +11,19 @@ function get_possible_values ($field)
   echo "Unknown field $field";
   error_log ("Unknown field $field");
   die();
+}
+
+function get_label_from_id ($id, $field)
+{
+  $dict = get_possible_values ($field);
+  foreach ($dict as $key)
+  {
+    if ($key[0] == $id)
+    {
+      return $key[1];
+    }
+  }
+  return $id;
 }
 
 ?>
