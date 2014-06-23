@@ -40,13 +40,13 @@ function name_public_compact_formatter_row ($row, $options)
   global $server_absolute_path_info;
   $use_link = strpos($options, 'uselink') !== FALSE;
   $use_tooltip = strpos ($options, 'usetooltip') !== FALSE;
-  $nick = strpos($row['hidesome'], '-0-') === false ? decode($row['nick']) : NULL;
-  $fio = strpos($row['hidesome'], '-10-') === false ? decode($row['fio']) : NULL;
+  $nick = (strpos($row['hidesome'], '-0-') === false) ? trim(decode($row['nick'])) : NULL;
+  $fio = strpos($row['hidesome'], '-10-') === false ? trim(decode($row['fio'])) : NULL;
   $inp = "ИНП {$row['sid']}";
-  
-  $value = array_filter( array ($nick, $fio, $inp));
+
+  $value = array_slice(array_filter( array ($nick, $fio, $inp)),0);
   $value = $value[0];
-  
+
   if ($use_tooltip)
   {
     $tooltip = $fio ? "$fio ($nick)" : $nick;
@@ -56,7 +56,7 @@ function name_public_compact_formatter_row ($row, $options)
   {
     $tooltip = '';
   }
-  
+
   $value =  $use_link ? "<a href=\"{$server_absolute_path_info}users/{$row["sid"]}/\">$value</a>" : $value;
   return "<span class=\"username_label\"$tooltip>$value</span>";
 }
