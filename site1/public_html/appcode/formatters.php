@@ -1,6 +1,12 @@
 <?php
 // This file includes some quick formatting functions
 
+function timestamp_formatter($obj, $row)
+{
+    $timestamp = $row [$obj -> getName()];
+    return date("Y-m-d H:i", $timestamp);
+}
+
 function phone_formatter($obj, $row)
 {
   return phone_formatter_raw($row [$obj -> getName()]);

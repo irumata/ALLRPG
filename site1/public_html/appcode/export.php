@@ -179,6 +179,22 @@ function get_fields_before ()
 					'write'	=>	100000,
 			),
 			Array(
+					'name'	=>	"datesent",
+					'sname'	=>	"Подана",
+					'type'	=>	"text",
+					'valueExtractor' => timestamp_formatter, 
+					'read'	=>	1,
+					'write'	=>	100000,
+			),
+			Array(
+					'name'	=>	"date",
+					'sname'	=>	"Изменена",
+					'type'	=>	"text",
+					'valueExtractor' => timestamp_formatter, 
+					'read'	=>	1,
+					'write'	=>	100000,
+			),
+			Array(
 					'name'	=>	"fio",
 					'sname'	=>	"ФИО",
 					'type'	=>	"text",
