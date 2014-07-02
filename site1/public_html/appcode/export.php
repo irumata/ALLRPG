@@ -347,11 +347,12 @@ function export_roles ($mode, $team, $short = FALSE)
 			
   role_linked_hint_sitewide();
  
-  if (!$short) // If we include comments, we should use disk instead of memory
-  {
-    $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_discISAM;
-    PHPExcel_Settings::setCacheStorageMethod($cacheMethod);
-  }
+//  02.07.2014 Voronin: disabled disc cache usage for export with comments
+//  if (!$short) // If we include comments, we should use disk instead of memory
+//  {
+//    $cacheMethod = PHPExcel_CachedObjectStorageFactory::cache_to_discISAM;
+//    PHPExcel_Settings::setCacheStorageMethod($cacheMethod);
+//  }
 
   $excel = new PHPExcel();
   $excel->getProperties()
