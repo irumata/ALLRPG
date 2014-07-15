@@ -1058,10 +1058,10 @@ function dynamicaction($obj) {
 						if($j<count($temp)-1)
 						{
 							$t.=$fildsname.', ';
-							$s.="'".$temp[$fildsname]."', ";
+							$s.="'".mysql_real_escape_string($temp[$fildsname])."', ";
 							if($filds[$i]->getType()!="timestamp")
 							{
-								$q2.=$fildsname."='".$temp[$fildsname]."' AND ";
+								$q2.=$fildsname."='".mysql_real_escape_string($temp[$fildsname])."' AND ";
 							}
 							else
 							{
@@ -1075,7 +1075,7 @@ function dynamicaction($obj) {
 							$s.="'".mysql_real_escape_string($temp[$fildsname])."')";
 							if($filds[$i]->getType()!="timestamp")
 							{
-								$q2.=$fildsname."='".$temp[$fildsname]."'";
+								$q2.=$fildsname."='".mysql_real_escape_string($temp[$fildsname])."'";
 							}
 							else
 							{
