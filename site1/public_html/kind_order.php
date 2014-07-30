@@ -479,13 +479,12 @@ if($_SESSION["user_id"]!="" || $act=="add") {
 				}
 			}
 
-			if($oneorderfromplayer) {
-				$result3=mysql_query("SELECT * FROM ".$prefix."roles WHERE player_id=".$_SESSION["user_id"]." AND site_id=".$subobj." AND todelete2!='1'");
+			if($oneorderfromplayer && $act=="add" && $subobj!='') {
+				$result3=db_query("SELECT * FROM {$prefix}roles WHERE player_id={$_SESSION["user_id"]} AND site_id={$subobj} AND todelete2!='1' and todelete!='1'");
 				$c=mysql_fetch_array($result3);
-				if($c["id"]!='' && $act=="add" && $subobj!='') {
+				if($c["id"]!='') {
 					$siteisopen=false;
 					$content2.='<center><br><b>Мастера отключили возможность подачи более одной заявки одним пользователем на данный проект.</b><br><br></center>';
-					//err_info("Мастера отключили возможность подачи более одной заявки одним пользователем на данный проект.");
 				}
 			}
 
@@ -557,7 +556,8 @@ if($_SESSION["user_id"]!="" || $act=="add") {
 		}
 
 		function locatpath($id) {
-      $return = implode ('→', get_location_path ($id, $_SESSION ['siteid']));
+      global $subobj;
+      $return = implode ('→', get_location_path ($id, $subobj));
       return $return ? "($return)" : '(не указана)';
     }
 
