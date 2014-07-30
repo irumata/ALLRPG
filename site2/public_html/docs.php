@@ -194,16 +194,66 @@ if(isset($_REQUEST["roles"])) {
 		$role_vacancy = $role_data["vacancy"];
 		$role_id = $role_data['id'];
 		$role_status = $role_data['status'];
+		$vacancy_name = $role_data['vacancy_name'];
 		
     $alllinks = array();
 		if($role_vacancy) {
 			$result3=db_query("
-        SELECT * from {$prefix}roleslinks
-        WHERE (roles LIKE '%-all{$role_vacancy}-%' OR roles LIKE '%-{$role_id}-%') and content!='' 
-          and site_id=$subobj and (notready!='1') 
+        SELECT rl.*, rp.name AS sujet_name 
+        FROM {$prefix}roleslinks rl
+        INNER JOIN {$prefix}roleslinks rp ON rp.id = rl.parent
+        WHERE (rl.roles LIKE '%-all{$role_vacancy}-%' OR rl.roles LIKE '%-{$role_id}-%') and rl.content!='' 
+          and rl.site_id=$subobj and (rl.notready!='1' OR 1=1) 
         ORDER by date desc");
 
 			while($c=mysql_fetch_array($result3)) {
+        if ($subobj == 592)
+        {
+          //IF VEDMAK MODE
+          if (substr($c['sujet_name'], 0, 2) == '!!')
+          {
+            $this_link  =  '<table width=537 height=749 style="page-break-after:always;page-break-before:always;" background="http://vedmak2014.ru/userfiles/image/pretenz.jpg">
+ <tbody  >
+ <tr>
+  <td valign=bottom height=270>
+  <p style="font-family: Adana script; font-size: 25; text-align: center;">Настоящим подтверждается, что</center></p>
+  </td></tr>
+ <tr> <td height=110   valign=center>
+  <p style="font-family: Adana script; font-size: 40; margin-left: 120; margin-right: 120; text-align: center;"><i>[Имя роли]</i></p>
+  </td>
+ </tr>
+ <tr>
+  <td valign=center height=25>
+  <p style="font-family: Adana script; font-size: 25; text-align: center;">имеет <b><i>претензию</i></b> на:</center></p>
+  </td>
+ </tr>
+ <tr>
+  <td height=110 valign=center>
+  <p style="font-family: Adana script; font-size: 40; margin-left: 120; margin-right: 120; text-align: center;"><i>[Поместье]</i></p>
+  </td>
+  <td>
+  <p>&nbsp;</p>
+  </td>
+ </tr>
+ <tr>
+  <td valign=top>
+  <p style="font-size: small; text-align: right; margin-left: 120; margin-right: 100; "><i>Сертификат можно показывать, но нельзя уничтожить или отнять. При отказе от претензии отдайте сертификат региональному мастеру.<br><b>&nbsp; ИНП [ИНП]</i></b></p>
+  </td>
+ </tr>
+</tbody></table>';
+          $estate_name = str_replace("Претензия", '', $c['content']);
+          $estate_name = str_replace("(см. Правила по поместьям и титулам):", '', $estate_name);
+          $estate_name = str_replace("Владелец", '', $estate_name);
+          $estate_name = str_replace("(получает доход)", '', $estate_name);
+          $estate_name = str_replace("Владеет на начало игры", '', $estate_name);
+          $estate_name = str_replace("Поместье", '', $estate_name);
+          $estate_name = str_replace("<br>", '', $estate_name);
+
+          $this_link = str_replace('[Поместье]', $estate_name, $this_link);
+					$alllinks[] = $this_link;
+continue;
+          }
+        }
 				if(strpos($c["roles"],'-'.$id.'-')!==false || ($role_status == 3 && strpos($c["roles"],'-all'.$role_vacancy .'-')!==false)) {
           $this_link = '<b>Про ';
 
