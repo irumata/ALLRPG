@@ -8,6 +8,52 @@ include_once($path.$direct.'/classes/classes_objects.php');
 require_once ($path."appcode/possible_values.php");
 require_once ($path."appcode/data/common.php");
 
+function get_link_targets($roles2)
+		{
+      global $subobj, $link;
+      $roles2=substr($roles2,1,$roles2);
+      $roles2=explode('-',$roles2);
+      foreach($roles2 as $r) {
+        $vac=0;
+        if(strpos($r,'all')===false) {
+          $result2=mysql_query("SELECT * FROM ".$prefix."roles WHERE site_id=".$subobj." and id=".$r);
+          $b=mysql_fetch_array($result2);
+          $vac=$b["vacancy"];
+        }
+        else {
+          $vac=str_replace('all','',$r);
+        }
+        $result2=mysql_query("SELECT * FROM ".$prefix."rolevacancy WHERE site_id=".$subobj." and id=".$vac);
+        $b=mysql_fetch_array($result2);
+        if($b["name"]!='') {
+          if(strpos($r,'all')!==false) {
+            $result2=mysql_query("SELECT player_id,sorter FROM ".$prefix."roles WHERE site_id=".$subobj." and vacancy=".$vac);
+          }
+          else {
+            $result2=mysql_query("SELECT player_id,sorter FROM ".$prefix."roles WHERE site_id=".$subobj." and vacancy=".$vac);
+          }
+          if(mysql_affected_rows($link)>0) {
+            $link_target = array();
+            while($b=mysql_fetch_array($result2)) {
+                                $result6=mysql_query("SELECT * FROM ".$prefix."users WHERE id=".$b["player_id"]);
+                                $f=mysql_fetch_array($result6);
+                                $link_target [] = '«'.decode($b["sorter"]).'» ('.usname($f,true,true).'), ';
+            }
+            return implode(', ', $link_target);
+          }
+          else {
+            return '«'.$b["name"].'»';
+          }
+        }
+        elseif($r==0) {
+          return '<i>глобальный сюжет</i>';
+        }
+        else {
+          return '<i>удаленную роль</i>';
+        }
+      }
+		}
+
 session_start();
 start_mysql();
 
@@ -131,13 +177,6 @@ if(isset($_REQUEST["roles"])) {
 			'read'	=>	1,
 			'write'	=>	100000,
 	);
-	$rolefields[]=Array(
-			'name'	=>	"rolelinks",
-			'sname'	=>	"Связи",
-			'type'	=>	"wysiwyg",
-			'read'	=>	1,
-			'write'	=>	100000,
-	);
 	
     $subobj=$_SESSION["siteid"];
     
@@ -155,74 +194,37 @@ if(isset($_REQUEST["roles"])) {
 		$role_vacancy = $role_data["vacancy"];
 		$role_id = $role_data['id'];
 		$role_status = $role_data['status'];
+		
+    $alllinks = array();
 		if($role_vacancy) {
 			$result3=db_query("
         SELECT * from {$prefix}roleslinks
         WHERE (roles LIKE '%-all{$role_vacancy}-%' OR roles LIKE '%-{$role_id}-%') and content!='' 
-          and site_id=$subobj and notready!='1'
+          and site_id=$subobj and (notready!='1') 
         ORDER by date desc");
+
 			while($c=mysql_fetch_array($result3)) {
 				if(strpos($c["roles"],'-'.$id.'-')!==false || ($role_status == 3 && strpos($c["roles"],'-all'.$role_vacancy .'-')!==false)) {
-					$alllinks.='<b>';
-					$alllinks.='Про ';
+          $this_link = '<b>Про ';
 
 					if($c["hideother"]=='0') {
-						unset($roles2);
-						$roles2=substr($c["roles2"],1,strlen($c["roles2"])-2);
-						$roles2=explode('-',$roles2);
-						foreach($roles2 as $r) {
-							$vac=0;
-							if(strpos($r,'all')===false) {
-								$result2=mysql_query("SELECT * FROM ".$prefix."roles WHERE site_id=".$subobj." and id=".$r);
-								$b=mysql_fetch_array($result2);
-								$vac=$b["vacancy"];
-							}
-							else {
-								$vac=str_replace('all','',$r);
-							}
-							$result2=mysql_query("SELECT * FROM ".$prefix."rolevacancy WHERE site_id=".$subobj." and id=".$vac);
-							$b=mysql_fetch_array($result2);
-							if($b["name"]!='') {
-								if(strpos($r,'all')!==false) {
-									$result2=mysql_query("SELECT player_id,sorter FROM ".$prefix."roles WHERE site_id=".$subobj." and vacancy=".$vac);
-								}
-								else {
-									$result2=mysql_query("SELECT player_id,sorter FROM ".$prefix."roles WHERE site_id=".$subobj." and vacancy=".$vac);
-								}
-								if(mysql_affected_rows($link)>0) {
-									while($b=mysql_fetch_array($result2)) {
-                                    	$result6=mysql_query("SELECT * FROM ".$prefix."users WHERE id=".$b["player_id"]);
-                                    	$f=mysql_fetch_array($result6);
-                                    	$alllinks.='«'.decode($b["sorter"]).'» ('.usname($f,true,true).'), ';
-									}
-								}
-								else {
-                                   	$alllinks.='«'.$b["name"].'», ';
-								}
-							}
-							elseif($r==0) {
-								$alllinks.='<i>глобальный сюжет</i>, ';
-							}
-							else {
-								$alllinks.='<i>удаленную роль</i>, ';
-							}
-						}
-						$alllinks=substr($alllinks,0,strlen($alllinks)-2);
+						$this_link.= get_link_targets ($c['roles2']);
 					}
 					else {
-						$alllinks.='<i>скрыто</i>';
+						$this_link.='<i>скрыто</i>';
 					}
-					$alllinks.='</b><br>';
-					$alllinks.=decode($c["content"]);
-					$alllinks.='<br><br>';
+					$this_link.='</b><br>';
+					$this_link.=decode($c["content"]);
+					$alllinks[] = $this_link;
 				}
 			}
-			$alllinks=substr($alllinks,0,strlen($alllinks)-8);
 		}
-		$rolelinks["rolelinks"]=$alllinks;
+		$rolelinks = implode('<br><br>', $alllinks);
 
-		$b=array_merge($role_data, unmakevirtual($role_data['allinfo']), $rolelinks);
+		$b=array_merge($role_data, unmakevirtual($role_data['allinfo']));
 		$tbd=$docs;
+		
+		$tbd = str_replace('[Связи]', $rolelinks, $tbd);
 		foreach($rolefields as $v) {
 			if($v['type']!='h1' && strpos($tbd,'['.$v["sname"].']')!==false && $v["name"]!="allinfo") {
 				$obj_n=createElem($v);
