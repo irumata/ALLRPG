@@ -57,6 +57,13 @@ if(isset($_REQUEST["roles"])) {
 			'read'	=>	1,
 			'write'	=>	100000,
 	);
+	$rolefields[]= array(
+			'name'	=>	"sid",
+			'sname'	=>	"ИНП",
+			'type'	=>	"text",
+			'read'	=>	1,
+			'write'	=>	100000,
+	);
 	$rolefields[]=Array(
 			'name'	=>	"id",
 			'sname'	=>	"№ заявки",
