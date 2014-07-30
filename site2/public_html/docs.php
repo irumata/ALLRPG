@@ -6,6 +6,7 @@ include_once($path.'db.inc');
 include_once($path.'classes_objects_allrpg.php');
 include_once($path.$direct.'/classes/classes_objects.php');
 require_once ($path."appcode/possible_values.php");
+require_once ($path."appcode/data/common.php");
 
 session_start();
 start_mysql();
@@ -60,6 +61,13 @@ if(isset($_REQUEST["roles"])) {
 	$rolefields[]= array(
 			'name'	=>	"sid",
 			'sname'	=>	"ИНП",
+			'type'	=>	"text",
+			'read'	=>	1,
+			'write'	=>	100000,
+	);
+		$rolefields[]= array(
+			'name'	=>	"vacancy_name",
+			'sname'	=>	"Имя роли",
 			'type'	=>	"text",
 			'read'	=>	1,
 			'write'	=>	100000,
@@ -130,16 +138,31 @@ if(isset($_REQUEST["roles"])) {
 			'read'	=>	1,
 			'write'	=>	100000,
 	);
+	
+    $subobj=$_SESSION["siteid"];
+    
     for($i=0;$i<count($roles);$i++) {
-    	$subobj=$_SESSION["siteid"];
+    
 		$id=$roles[$i];
-		$result=mysql_query("SELECT * from ".$prefix."roles where id=".$id." and site_id=".$subobj);
-		$a=mysql_fetch_array($result);
+		$role_data = db_get_row("
+      SELECT *, rv.name AS vacancy_name 
+      from {$prefix}roles 
+      LEFT JOIN {$prexif}rolevacancy rv ON rv.id = roles.vacancy
+      LEFT JOIN {$prefix}users u ON roles.player_id = u.id
+      where roles.id=$id and roles.site_id=$subobj");
 		$alllinks='';
-		if($a["vacancy"]!=0) {
-			$result3=mysql_query("SELECT * from ".$prefix."roleslinks where (roles LIKE '%-all".$a["vacancy"]."-%' OR roles LIKE '%-".$a["id"]."-%') and content!='' and site_id=".$subobj." and notready!='1' order by date desc");
+		
+		$role_vacancy = $role_data["vacancy"];
+		$role_id = $role_data['id'];
+		$role_status = $role_data['status'];
+		if($role_vacancy) {
+			$result3=db_query("
+        SELECT * from {$prefix}roleslinks
+        WHERE (roles LIKE '%-all{$role_vacancy}-%' OR roles LIKE '%-{$role_id}-%') and content!='' 
+          and site_id=$subobj and notready!='1'
+        ORDER by date desc");
 			while($c=mysql_fetch_array($result3)) {
-				if(strpos($c["roles"],'-'.$id.'-')!==false || ($a["status"]==3 && strpos($c["roles"],'-all'.$a["vacancy"].'-')!==false)) {
+				if(strpos($c["roles"],'-'.$id.'-')!==false || ($role_status == 3 && strpos($c["roles"],'-all'.$role_vacancy .'-')!==false)) {
 					$alllinks.='<b>';
 					$alllinks.='Про ';
 
@@ -198,14 +221,9 @@ if(isset($_REQUEST["roles"])) {
 		}
 		$rolelinks["rolelinks"]=$alllinks;
 
-    	$result=mysql_query("SELECT * FROM ".$prefix."roles where id=".$roles[$i]);
-		$a=mysql_fetch_array($result);
-		$old=unmakevirtual($a['allinfo']);
-		$result2=mysql_query("SELECT * FROM ".$prefix."users where id=".$a["player_id"]);
-		$b=mysql_fetch_array($result2);
-		$b=array_merge($b,$a,$old,$rolelinks);
+		$b=array_merge($role_data, unmakevirtual($role_data['allinfo']), $rolelinks);
 		$tbd=$docs;
-		foreach($rolefields as $f=>$v) {
+		foreach($rolefields as $v) {
 			if($v['type']!='h1' && strpos($tbd,'['.$v["sname"].']')!==false && $v["name"]!="allinfo") {
 				$obj_n=createElem($v);
 				$obj_n->setVal($b);
