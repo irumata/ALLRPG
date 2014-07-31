@@ -1,7 +1,7 @@
 ﻿<?php
 if($_SESSION["user_id"]!='' && $workrights["site"]["docs"]) {
 	if($action=="savedoc" && $_SESSION["siteid"]!='') {
-    	mysql_query("UPDATE ".$prefix."sites SET docs='".encode_to_cp1251($_REQUEST["docs"])."',docs2='".encode_to_cp1251($_REQUEST["docs2"])."',docs3='".encode_to_cp1251($_REQUEST["docs3"])."' WHERE id=".$_SESSION["siteid"]);
+    	mysql_query("UPDATE ".$prefix."sites SET docs='".mysql_real_escape_string($_REQUEST["docs"])."',docs2='".mysql_real_escape_string($_REQUEST["docs2"])."',docs3='".mysql_real_escape_string($_REQUEST["docs3"])."' WHERE id=".$_SESSION["siteid"]);
     	dynamic_err_one('success','HTML-шаблоны успешно сохранены.');
 	}
 
