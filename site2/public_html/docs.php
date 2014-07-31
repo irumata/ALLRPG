@@ -205,12 +205,11 @@ if(isset($_REQUEST["roles"])) {
         WHERE (rl.roles LIKE '%-all{$role_vacancy}-%' OR rl.roles LIKE '%-{$role_id}-%') and rl.content!='' 
           and rl.site_id=$subobj and (rl.notready!='1' OR 1=1) 
         ORDER by date desc");
-
 			while($c=mysql_fetch_array($result3)) {
         if ($subobj == 592)
         {
           //IF VEDMAK MODE
-          if (substr($c['sujet_name'], 0, 2) == '!!')
+          if (substr(trim($c['sujet_name']), 0, 2) == '!!')
           {
             $this_link  =  '<table width=537 height=749 style="page-break-after:always;page-break-before:always;" background="http://vedmak2014.ru/userfiles/image/pretenz.jpg">
  <tbody  >
@@ -241,6 +240,8 @@ if(isset($_REQUEST["roles"])) {
   </td>
  </tr>
 </tbody></table>';
+          $estate_name = $c['content'];
+          $owner = strpos($estate_name, 'Владелец') !== FALSE;
           $estate_name = str_replace("Претензия", '', $c['content']);
           $estate_name = str_replace("(см. Правила по поместьям и титулам):", '', $estate_name);
           $estate_name = str_replace("Владелец", '', $estate_name);
