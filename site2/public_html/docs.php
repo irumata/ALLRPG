@@ -198,6 +198,7 @@ if(isset($_REQUEST["roles"])) {
 		
     $alllinks = array();
 		if($role_vacancy) {
+      $all_links_list = array();
 			$result3=db_query("
         SELECT rl.*, rp.name AS sujet_name 
         FROM {$prefix}roleslinks rl
@@ -206,12 +207,18 @@ if(isset($_REQUEST["roles"])) {
           and rl.site_id=$subobj and (rl.notready!='1' OR 1=1) 
         ORDER by date desc");
 			while($c=mysql_fetch_array($result3)) {
-        if ($subobj == 592)
+        $all_links_list [] = $c;
+			}
+      if ($subobj == 592)
+      {
+        $estates = array();
+        foreach ($all_links_list as $c)
         {
+
           //IF VEDMAK MODE
           if (substr(trim($c['sujet_name']), 0, 2) == '!!')
           {
-            $this_link  =  '<table width=537 height=749 style="page-break-after:always;page-break-before:always;" background="http://vedmak2014.ru/userfiles/image/pretenz.jpg">
+            $this_link  =  '<table width=537 height=749 style="page-break-after:always;page-break-before:always;margin-top:200px;margin-bottom:200px;margin-left:50px" background="http://vedmak2014.ru/userfiles/image/pretenz.jpg">
  <tbody  >
  <tr>
   <td valign=bottom height=270>
@@ -251,10 +258,26 @@ if(isset($_REQUEST["roles"])) {
           $estate_name = str_replace("<br>", '', $estate_name);
 
           $this_link = str_replace('[Поместье]', $estate_name, $this_link);
-					$alllinks[] = $this_link;
-continue;
+					$estates[] = $this_link;
           }
         }
+        if (count($estates))
+        {
+          $alllinks[] = "<span style='page-break-after:always;page-break-before:always;'>";
+          $alllinks[] = implode($estates);
+          $alllinks[] = "</span>";
+        }
+			}
+		}
+			foreach ($all_links_list as $c)
+			{
+        if ($subobj == 592)
+      {
+        if (substr(trim($c['sujet_name']), 0, 2) == '!!')
+          {
+          continue;
+          }
+      }
 				if(strpos($c["roles"],'-'.$id.'-')!==false || ($role_status == 3 && strpos($c["roles"],'-all'.$role_vacancy .'-')!==false)) {
           $this_link = '<b>Про ';
 
@@ -269,7 +292,6 @@ continue;
 					$alllinks[] = $this_link;
 				}
 			}
-		}
 		$rolelinks = implode('<br><br>', $alllinks);
 
 		$b=array_merge($role_data, unmakevirtual($role_data['allinfo']));
