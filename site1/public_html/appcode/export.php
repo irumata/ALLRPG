@@ -278,7 +278,7 @@ function get_fields_before ()
 			),
 			Array(
 					'name'	=>	"tweeter",
-					'sname'	=>	"Tweeter",
+					'sname'	=>	"Twitter",
 					'type'	=>	"text",
 					'read'	=>	1,
 					'write'	=>	100000,

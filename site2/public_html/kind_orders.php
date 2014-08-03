@@ -1304,7 +1304,7 @@ body {background-color: white; background: none;}
 			),
 			Array(
 				'name'	=>	"tweeter",
-				'sname'	=>	"Tweeter",
+				'sname'	=>	"Twitter",
 				'type'	=>	"text",
 				'default'	=>	social2($a["tweeter"],"tweeter",true),
 				'read'	=>	100,
