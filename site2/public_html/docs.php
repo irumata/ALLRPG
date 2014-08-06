@@ -184,20 +184,20 @@ if(isset($_REQUEST["roles"])) {
     
 		$id=$roles[$i];
 		$role_data = db_get_row("
-      SELECT *, rv.name AS vacancy_name 
-      from {$prefix}roles 
-      LEFT JOIN {$prexif}rolevacancy rv ON rv.id = roles.vacancy
-      LEFT JOIN {$prefix}users u ON roles.player_id = u.id
-      where roles.id=$id and roles.site_id=$subobj");
+      SELECT *, rv.name AS vacancy_name, r.id as role_id
+      from {$prefix}roles  r
+      LEFT JOIN {$prefix}rolevacancy rv ON rv.id = r.vacancy
+      LEFT JOIN {$prefix}users u ON r.player_id = u.id
+      where r.id=$id and r.site_id=$subobj");
 		$alllinks='';
 		
 		$role_vacancy = $role_data["vacancy"];
-		$role_id = $role_data['id'];
+		$role_id = $role_data['role_id'];
 		$role_status = $role_data['status'];
 		$vacancy_name = $role_data['vacancy_name'];
 		
     $alllinks = array();
-		if($role_vacancy) {
+		if($role_vacancy || true) {
       $all_links_list = array();
 			$result3=db_query("
         SELECT rl.*, rp.name AS sujet_name 
@@ -278,7 +278,7 @@ if(isset($_REQUEST["roles"])) {
           continue;
           }
       }
-				if(strpos($c["roles"],'-'.$id.'-')!==false || ($role_status == 3 && strpos($c["roles"],'-all'.$role_vacancy .'-')!==false)) {
+				if(strpos($c["roles"],'-'.$role_id.'-')!==false || ($role_status == 3 && strpos($c["roles"],'-all'.$role_vacancy .'-')!==false)) {
           $this_link = '<b>Про ';
 
 					if($c["hideother"]=='0') {
