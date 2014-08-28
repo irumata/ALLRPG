@@ -67,7 +67,7 @@ $roles[]=Array(
 "'.$a["moneydone"].'",
 "'.htmlspecialchars($a["sorter"]).'",
 '.$a["locat"].',
-"'.htmlspecialchars($a["allinfo"]).'",
+"'.str_replace("\"","&quot;",str_replace("'","&#039;",$a["allinfo"])).'",
 '.$a["status"].',
 '.$a["todelete"].',
 '.$a["todelete2"].',
