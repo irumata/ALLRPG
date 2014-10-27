@@ -82,6 +82,8 @@ $logname = 'loadstat/loadstat'.date('Y-m-d',time()).'.log';
 $logfile = fopen($logname, 'a');
 fwrite($logfile, '[LOCAL TIME]: '.date('Y-m-d h:i:s',time()).' [LOAD TIME]: '.$globaltimer.' [REQUEST]: '.$_SERVER['REQUEST_URI'].' [AGENT]: '.$_SERVER['HTTP_USER_AGENT']."\r\n");
 fclose($logfile);
+$cleandir = "loadstat/";
+foreach (glob($cleandir."*log") as $file) { if (filemtime($file) < time() - 7*24*60*60) { unlink($file); } }
 
 
 # Разрываем соединение с MySQL-сервером
