@@ -36,13 +36,6 @@ if($_SESSION["user_id"]!='' && $workrights["site"]["settings"]) {
 	$a = mysql_fetch_array($result);
 	$usetemp=$a["usetemp"];
 
-	if($usetemp==1) {
-		err_info('Если Вам потребуется подключить систему заявок к Вашему сайту, обратитесь, пожалуйста, к администрации.');
-	}
-	elseif($usetemp==2) {
-		err_info('Если Вам потребуется сайт к Вашей системе заявок, обратитесь, пожалуйста, к администрации.');
-	}
-
 	// Создание полей объекта
 	$obj_21=createElem(Array(
 			'name'	=>	"id",
