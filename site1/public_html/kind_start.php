@@ -117,7 +117,7 @@ if($_SESSION["user_id"]!='') {
 	$content2.='<div class="tile_logged_section5">';
 
 	$content2.='<li class="tile_messages black"></li>';
-	$content2.='<li class="tile_neworders blue"><a href="'.$server_absolute_path_site.'hosting2/"><div class="text">Создать<br>систему<br>заявок</div></a></li>';
+	$content2.='<li class="tile_neworders blue"><a href="'.$server_absolute_path_site.'hosting2/hosting2/act=add"><div class="text">Создать<br>систему<br>заявок</div></a></li>';
 	$content2.='<li class="tile_neworder black"><a href="'.$server_absolute_path.'order/order/act=add"><div class="text">Подать заявку</div></a></li>';
 
 	$content2.='</div>';
