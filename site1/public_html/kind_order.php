@@ -186,9 +186,11 @@ if($_SESSION["user_id"]!="" || $act=="add") {
 
 '.decode($comment_content);
 
+            error_log ("locat = {$a['locat']}"); 
             $targets = get_notification_targets($a["site_id"], $a["locat"], 'signtocomments');
             foreach ($targets as $target)
             {
+              error_log ("New comment from $myname send by mail to {$target['em']}");
               send_mail($myname, $myemail, $target['em'], $subject, $message);
             }
 						dynamic_err(array('success',"Комментарий успешно добавлен, мастерам отправлено e-mail уведомление."),'stayhere');

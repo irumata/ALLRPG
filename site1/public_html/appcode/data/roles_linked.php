@@ -25,23 +25,22 @@ function get_location_path ($location_id, $site_id)
   return $names;
 }
 
-function get_locations_to_root ($location_id, $site_id)
+function get_locations_to_root ($location_id)
 {
   //TODO: implement caching
   global $prefix;
 	
 	$location_id = intval ($location_id);
-	$site_id = intval ($site_id);
 	
 	if (!$location_id)
 	{
     return array();
 	}
 
-		$result = db_get_row ("SELECT id, parent, name FROM {$prefix}roleslocat WHERE id=$location_id and site_id=$site_id");
+		$result = db_get_row ("SELECT id, parent, name FROM {$prefix}roleslocat WHERE id=$location_id");
 		
 		if($result["id"]) {
-      $return =  $result["parent"] ? get_locations_to_root ($result["parent"], $site_id) : array();
+      $return =  $result["parent"] ? get_locations_to_root ($result["parent"]) : array();
 			$return [] = array('id' => intval($result['id']), 'parent' => intval($result['parent']), 'name' => decode($result["name"]));
 		}
 		else {

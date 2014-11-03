@@ -1,7 +1,7 @@
 <?php
 require_once ($server_inner_path."appcode/data/roles_linked.php");
 function _internal_getlocatnotifications($locat) {
-    $location_path = get_locations_to_root ($locat, $_SESSION["siteid"]);
+    $location_path = get_locations_to_root ($locat);
     $list = "notifications IS NULL OR notifications='-' OR notifications='' OR notifications LIKE '%-0-%'";
     foreach ($location_path as $location)
     {
@@ -18,6 +18,8 @@ function get_notification_targets($site_id, $location_id, $signmode, $author_to_
   $author_to_exclude = intval ($author_to_exclude);
   
   $notification_rights_condition = _internal_getlocatnotifications($location_id);
+  
+  error_log ("notification_rights_condition = $notification_rights_condition");
   
   if (!in_array ($signmode, array('signtocomments', 'signtochange', 'signtonew')))
   {
