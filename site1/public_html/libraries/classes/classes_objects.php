@@ -718,7 +718,7 @@ function unmakevirtual($a)
 			$pos2 = strpos($st1, "]");
 			$ce1 = substr($st1,1,$pos2-1);
 			$st1 = substr($st1,$pos2+1,strlen($st1));
-			$pos2 = strpos($st1, "]");
+			$pos2 = strpos($st1, "]&lt;br&gt");
 			$ce2 = substr($st1,1,$pos2-1);
 			$st1 = substr($st1,$pos2+1,strlen($st1));
 
