@@ -9,11 +9,21 @@ $datestart = encode($_GET['datestart']);
 $datefinish = encode($_GET['datefinish']);
 $game_id = encode($_GET['game_id']);
 $open_list = encode($_GET['open_list']);
+$kogdaigra_id = encode($_GET['kogdaigra_id']);
 
 start_mysql();
 # Установление соединения с MySQL-сервером
-
-if(isset($datestart) && $datestart!='' && isset($datefinish) && $datefinish!='')
+if ($kogdaigra_id)
+{
+  $kogdaigra_id = intval($kogdaigra_id);
+	$result=db_query("SELECT id, name, kogdaigra_id FROM {$prefix}allgames WHERE kogdaigra_id = $kogdaigra_id AND parent=0 order by name");
+	$games = array();
+	while($a = mysql_fetch_array($result)) {
+		$games [] = array('allrpg_info_id' => $a['id'],  "allrpg_info_name" => str_replace('"','\\"',decode($a["name"])), 'kogdaigra_id' => $a['kogdaigra_id']);
+	}
+	$content = json_encode ($games);
+}
+elseif(isset($datestart) && $datestart!='' && isset($datefinish) && $datefinish!='')
 {
   $datestart = mysql_real_escape_string($datestart);
   $datefinish = mysql_real_escape_string($datefinish);
