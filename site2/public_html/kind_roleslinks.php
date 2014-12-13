@@ -197,17 +197,6 @@ if($_SESSION["user_id"]!='' && $workrights["site"]["roleslinks"]) {
 	);
 	$obj->setElem2($obj_8);
 
-	/*$obj_9=createElem(Array(
-			'name'	=>	"type",
-			'sname'	=>	"Тип",
-			'type'	=>	"select",
-			'values'	=>	Array(Array(1,'положительная'),Array(2,'отрицательная'),Array(3,'нейтральная'),Array(4,'информационная')),
-			'read'	=>	10,
-			'write'	=>	100,
-		)
-	);
-	$obj->setElem2($obj_9);*/
-
 	$obj_10=createElem(Array(
 			'name'	=>	"content",
 			'sname'	=>	"Загруз",
@@ -252,13 +241,10 @@ if($_SESSION["user_id"]!='' && $workrights["site"]["roleslinks"]) {
 	);
 	$obj->setElem2($obj_12);
 	
-	if ($_SESSION["siteid"] == 592 || $_SESSION["siteid"] == 596)
-	{
-
 	$obj->setElem(createElem(Array(
       'name'	=>	"todo",
 			'sname'	=>	"Что осталось сделать",
-			'help'	=>	'ЭКСПЕРИМЕНТАЛЬНОЕ ПОЛЕ. Исчезнет в любой момент. Добавляйте сюда задачи для себя и других мастеров, или оставьте пустым, если все сделано',
+			'help'	=>	'Добавляйте сюда задачи для себя и других мастеров, или оставьте пустым, если все сделано',
 			'type'	=>	"textarea",
 			'read'	=>	10,
 			'write'	=>	100,
@@ -269,14 +255,14 @@ if($_SESSION["user_id"]!='' && $workrights["site"]["roleslinks"]) {
 		$obj->setElem2(createElem(Array(
       'name'	=>	"todo",
 			'sname'	=>	"Что осталось сделать",
-			'help'	=>	'ЭКСПЕРИМЕНТАЛЬНОЕ ПОЛЕ. Исчезнет в любой момент.  Добавляйте сюда задачи для себя и других мастеров, или оставьте пустым, если все сделано',
+			'help'	=>	'Добавляйте сюда задачи для себя и других мастеров, или оставьте пустым, если все сделано',
 			'type'	=>	"textarea",
 			'read'	=>	10,
 			'write'	=>	100,
 			'height'	=>	200,
 		)
-	));
-	}
+        ));
+	
 
 	// Исполнение dynamicaction, если необходимо
 	if($action=="dynamicaction")
@@ -386,30 +372,7 @@ if($_SESSION["user_id"]!='' && $workrights["site"]["roleslinks"]) {
 		$result3=mysql_query("SELECT * from ".$prefix."roleslinks where parent=".$id);
 		while($c=mysql_fetch_array($result3)) {
 			$alllinks.='<b>';
-			/*if($b["type"]==1) {
-				$alllinks.='Положительная с';
-			}
-			elseif($b["type"]==2) {
-				$alllinks.='Отрицательная с';
-			}
-			elseif($b["type"]==3) {
-				$alllinks.='Нейтральная с';
-			}
-			elseif($b["type"]==4) {
-				$alllinks.='Информационная с';
-			}
-			else {
-				$alllinks.='С';
-			}*/
 			$alllinks.='<a href="'.$server_absolute_path_site.'roleslinks/'.$c["id"].'/valuestype=1">Загруз</a> ';
-			/*«<a href="'.$server_absolute_path_site.'roleslinks/'.$b["id"].'/">';
-			if(decode($b["name"])!='') {
-				$alllinks.=decode($b["name"]);
-			}
-			else {
-				$alllinks.='<i>без названия</i>';
-			}
-			$alllinks.='</a>»*/
 			$alllinks.='для ';
 
 			unset($roles);
