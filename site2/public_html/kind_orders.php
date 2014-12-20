@@ -1018,9 +1018,6 @@ if($_SESSION["user_id"]!='' && $workrights["site"]["orders"]) {
 				}
 
 				if($a_id["todelete"]==1) {
-					mysql_query("DELETE from ".$prefix."roleshistory where role_id=".$id);
-					mysql_query("DELETE from ".$prefix."rolescomments where role_id=".$id);
-					mysql_query("DELETE from ".$prefix."rolescommentsread where role_id=".$id);
 					dynamicaction($obj);
 				}
 				else {
