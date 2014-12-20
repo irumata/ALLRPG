@@ -123,14 +123,14 @@ if($_SESSION["user_id"]!='' && $workrights["site"]["orders"]) {
 
 		if ($a['player_id'] != $target_user_id)
 		{
-      $result3=db_query("SELECT * FROM {$prefix}users where id=$target_user_id");
-      $c = mysql_fetch_array($result3);
-      $change_username = usname2($c,true);
-    }
-    else
-    {
-      $change_username = 'игрок';
-    }
+          $result3=db_query("SELECT * FROM {$prefix}users where id=$target_user_id");
+          $c = mysql_fetch_array($result3);
+          $change_username = usname2($c,true);
+        }
+        else
+        {
+          $change_username = 'игрок';
+        }
 
 		$allchanged[]=Array($a["date"],date("d.m.Y", $target_date).' '.$change_username);
 		$allchanged_sort[]=target_date;
