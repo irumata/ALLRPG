@@ -11,7 +11,19 @@ if($id>0) {
 	$result=mysql_query("SELECT * FROM ".$prefix."articles WHERE id=".$id);
 	$a = mysql_fetch_array($result);
 	$subobj=$a["parent"];
+	include ('article_urls.php');
+	
+	if (array_key_exists ($id, $article_urls))
+	{
+        $url = $article_urls[$id];
+        // header("Location: $url", true, 307);
+        // die();
+	}
 }
+
+
+
+
 
 $mainpath='<a href="'.$server_absolute_path_info.'articles/"><b>Статьи</b></a> ';
 
