@@ -28,7 +28,7 @@ function createsite() {
     }
 
     if(encode_to_cp1251($_REQUEST["title"])!='') {
-    	$title=encode_to_cp1251($_REQUEST["title"]);
+    	$title=addslashes(encode_to_cp1251($_REQUEST["title"]));
     }
     else {
     	dynamic_err_one('error',"Не заполнено обязательное поле «Название проекта».",array('title'));
