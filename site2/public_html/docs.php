@@ -11,7 +11,7 @@ require_once ($path."appcode/data/common.php");
 function get_link_targets($roles2)
 		{
       global $subobj, $link;
-      $roles2=substr($roles2,1,$roles2);
+      $roles2=substr($roles2,1,strlen($roles2));
       $roles2=explode('-',$roles2);
       foreach($roles2 as $r) {
         $vac=0;
