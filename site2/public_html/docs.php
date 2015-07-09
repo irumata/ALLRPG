@@ -46,7 +46,7 @@ function get_link_targets($roles2)
           }
         }
         elseif($r==0) {
-          return '<i>глобальный сюжет</i>';
+          return '';
         }
         else {
           return '<i>удаленную роль</i>';
