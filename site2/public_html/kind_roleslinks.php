@@ -1,4 +1,5 @@
 ﻿<?php
+require_once ($server_inner_path."appcode/formatters.php");
 function trim_text($input, $length, $ellipses = true) {
     //no need to trim, already shorter than trim length
     if (strlen($input) <= $length) {
@@ -78,7 +79,7 @@ if($_SESSION["user_id"]!='' && $workrights["site"]["roleslinks"]) {
 			'name'	=>	"vacancies",
 			'sname'	=>	"Участники сюжета",
 			'type'	=>	"multiselect",
-			'values'	=>	array_merge(Array(Array('0','Глобальный сюжет')),make5field($prefix."rolevacancy where site_id=".$_SESSION["siteid"]." order by name asc","id","name")),
+			'values'	=>	make5field($prefix."rolevacancy where site_id=".$_SESSION["siteid"]." order by name asc","id","name"),
 			'help'	=>	'список ролей можно настроить в разделе «<a href="'.$server_absolute_path_site.'roles/">Прописать сетку ролей</a>».',
 			'read'	=>	10,
 			'write'	=>	100,
@@ -144,22 +145,36 @@ if($_SESSION["user_id"]!='' && $workrights["site"]["roleslinks"]) {
 		$a=mysql_fetch_array($result);
 		$values=substr($a["vacancies"],1,strlen($a["vacancies"])-2);
 		$values=explode('-',$values);
+		$roles[]=Array('all0','<i>глобальный сюжет</i>');
 		foreach($values as $v) {
 	  		if($v!=0) {
 		  		$result2=mysql_query("SELECT * from ".$prefix."rolevacancy where site_id=".$_SESSION["siteid"]." and id=".$v);
 		  		$b=mysql_fetch_array($result2);
-		  		$roles[]=Array('all'.$v,'все принятые на роль «'.decode3($b["name"]).'» заявки');
-				$result2=mysql_query("SELECT * from ".$prefix."roles where vacancy=".$v." and site_id=".$_SESSION["siteid"]." and todelete2!=1 order by sorter asc");
+		  		$vacancy_name = decode3($b["name"]);
+		  		
+          $result2=mysql_query("SELECT * from ".$prefix."roles where vacancy=".$v." and site_id=".$_SESSION["siteid"]." and todelete2!=1 order by sorter asc");
+          $sorters = array(); $names_list = array();
+          
 				while($b=mysql_fetch_array($result2)) {
 					$result3=mysql_query("SELECT * from ".$prefix."users where id=".$b["player_id"]);
 					$c=mysql_fetch_array($result3);
-					$roles[]=Array($b["id"],str_replace('&#39','`',decode3($b["sorter"])).' ('.str_replace('&#39','`',decode3(usname($c,true))).')');
+					$names_list[] = name_public_compact_formatter_row($c, 'usetooltip');
+					$sorters[] = str_replace('&#39','`',decode3($b["sorter"]));
 				}
+				if ((count($sorters) == 1) && ($sorters[0] == $vacancy_name))
+				{
+          $sorters_result = "(игрок: " . implode(', ', $names_list). ")"; 
+				}
+				else if (count($sorters) == 0)
+				{
+          $sorters_result = 'ЗАЯВОК НЕТ';
+				}
+				else 
+				{
+          $sorters_result = ' заявка(и) ' . implode (', ', $sorters) . " (игрок(и): " . implode(', ', $names_list). ")";
+				}
+				$roles[]=Array('all'.$v, $vacancy_name . " — " .  $sorters_result );
 			}
-			else {
-				$roles[]=Array('all0','<i>глобальный сюжет</i>');
-			}
-
 		}
     }
 	$obj_6=createElem(Array(
@@ -289,11 +304,12 @@ if($_SESSION["user_id"]!='' && $workrights["site"]["roleslinks"]) {
 
 		unset($roles);
 		unset($roles2);
+		$content = $a['content'];
 		$roles=substr($a["roles"],1,strlen($a["roles"])-2);
 		$roles2=substr($a["roles2"],1,strlen($a["roles2"])-2);
 		$roles=explode('-',$roles);
 		$roles2=explode('-',$roles2);
-		$fromwhomtowhomtext='</b>Для <b>';
+		$fromwhomtowhomtext='</b>для <b>';
 		foreach($roles as $r) {
 			if(strpos($r,'all')!==false) {
 				$result2=mysql_query("SELECT * FROM ".$prefix."rolevacancy WHERE site_id=".$_SESSION["siteid"]." and id=".str_replace('all','',$r));
@@ -349,7 +365,7 @@ if($_SESSION["user_id"]!='' && $workrights["site"]["roleslinks"]) {
 		if($a["notready"]=='1') {
 			$fromwhomtowhomtext.='; <font color="red">не готов</font>';
 		}
-				if (trim($a["todo"]))
+		if (trim($a["todo"]))
 		{
       $todo = trim_text ($a["todo"], 30);
       $fromwhomtowhomtext.= "; <span title=\"{$a['todo']}\"><font color=\"orange\">TODO</font>: $todo</span>";
