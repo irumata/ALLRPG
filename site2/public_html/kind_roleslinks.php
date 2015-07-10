@@ -1,5 +1,6 @@
 ﻿<?php
 require_once ($server_inner_path."appcode/formatters.php");
+
 function trim_text($input, $length, $ellipses = true) {
     //no need to trim, already shorter than trim length
     if (strlen($input) <= $length) {
@@ -147,7 +148,9 @@ if($_SESSION["user_id"]!='' && $workrights["site"]["roleslinks"]) {
 		$values=explode('-',$values);
 		$roles[]=Array('all0','<i>глобальный сюжет</i>');
 		foreach($values as $v) {
-	  		if($v!=0) {
+	  		if($v ==0) {
+          continue;
+        }
 		  		$result2=mysql_query("SELECT * from ".$prefix."rolevacancy where site_id=".$_SESSION["siteid"]." and id=".$v);
 		  		$b=mysql_fetch_array($result2);
 		  		$vacancy_name = decode3($b["name"]);
@@ -174,7 +177,6 @@ if($_SESSION["user_id"]!='' && $workrights["site"]["roleslinks"]) {
           $sorters_result = ' заявка(и) ' . implode (', ', $sorters) . " (игрок(и): " . implode(', ', $names_list). ")";
 				}
 				$roles[]=Array('all'.$v, $vacancy_name . " — " .  $sorters_result );
-			}
 		}
     }
 	$obj_6=createElem(Array(
