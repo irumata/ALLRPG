@@ -209,87 +209,25 @@ if(isset($_REQUEST["roles"])) {
 			while($c=mysql_fetch_array($result3)) {
         $all_links_list [] = $c;
 			}
-      if ($subobj == 592)
-      {
-        $estates = array();
-        foreach ($all_links_list as $c)
-        {
-
-          //IF VEDMAK MODE
-          if (substr(trim($c['sujet_name']), 0, 2) == '!!')
-          {
-            $this_link  =  '<table width=537 height=749 style="page-break-after:always;page-break-before:always;margin-top:200px;margin-bottom:200px;margin-left:50px" background="http://vedmak2014.ru/userfiles/image/pretenz.jpg">
- <tbody  >
- <tr>
-  <td valign=bottom height=270>
-  <p style="font-family: Adana script; font-size: 25; text-align: center;">Настоящим подтверждается, что</center></p>
-  </td></tr>
- <tr> <td height=110   valign=center>
-  <p style="font-family: Adana script; font-size: 40; margin-left: 120; margin-right: 120; text-align: center;"><i>[Имя роли]</i></p>
-  </td>
- </tr>
- <tr>
-  <td valign=center height=25>
-  <p style="font-family: Adana script; font-size: 25; text-align: center;">имеет <b><i>претензию</i></b> на:</center></p>
-  </td>
- </tr>
- <tr>
-  <td height=110 valign=center>
-  <p style="font-family: Adana script; font-size: 40; margin-left: 120; margin-right: 120; text-align: center;"><i>[Поместье]</i></p>
-  </td>
-  <td>
-  <p>&nbsp;</p>
-  </td>
- </tr>
- <tr>
-  <td valign=top>
-  <p style="font-size: small; text-align: right; margin-left: 120; margin-right: 100; "><i>Сертификат можно показывать, но нельзя уничтожить или отнять. При отказе от претензии отдайте сертификат региональному мастеру.<br><b>&nbsp; ИНП [ИНП]</i></b></p>
-  </td>
- </tr>
-</tbody></table>';
-          $estate_name = $c['content'];
-          $owner = strpos($estate_name, 'Владелец') !== FALSE;
-          $estate_name = str_replace("Претензия", '', $c['content']);
-          $estate_name = str_replace("(см. Правила по поместьям и титулам):", '', $estate_name);
-          $estate_name = str_replace("Владелец", '', $estate_name);
-          $estate_name = str_replace("(получает доход)", '', $estate_name);
-          $estate_name = str_replace("Владеет на начало игры", '', $estate_name);
-          $estate_name = str_replace("Поместье", '', $estate_name);
-          $estate_name = str_replace("<br>", '', $estate_name);
-
-          $this_link = str_replace('[Поместье]', $estate_name, $this_link);
-					$estates[] = $this_link;
-          }
-        }
-        if (count($estates))
-        {
-          $alllinks[] = "<span style='page-break-after:always;page-break-before:always;'>";
-          $alllinks[] = implode($estates);
-          $alllinks[] = "</span>";
-        }
-			}
 		}
 			foreach ($all_links_list as $c)
 			{
-        if ($subobj == 592)
-      {
-        if (substr(trim($c['sujet_name']), 0, 2) == '!!')
-          {
-          continue;
-          }
-      }
 				if(strpos($c["roles"],'-'.$role_id.'-')!==false || ($role_status == 3 && strpos($c["roles"],'-all'.$role_vacancy .'-')!==false)) {
-          $this_link = '<b>Про ';
-
 					if($c["hideother"]=='0') {
-						$this_link.= get_link_targets ($c['roles2']);
+            $target = trim(get_link_targets ($c['roles2']));						
 					}
 					else {
-						$this_link.='<i>скрыто</i>';
+						$target ='<i>скрыто</i>';
 					}
-					$this_link.='</b><br>';
-					$this_link.=decode($c["content"]);
-					$alllinks[] = $this_link;
+					if ($target)
+          {
+            $this_link= '<b>Про ' . $target . '</b><br>';
+          }
+          else
+          {
+            $this_link = '';
+          }
+					$alllinks[] = $this_link . decode($c["content"]);
 				}
 			}
 		$rolelinks = implode('<br><br>', $alllinks);
