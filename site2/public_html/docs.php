@@ -8,12 +8,9 @@ include_once($path.$direct.'/classes/classes_objects.php');
 require_once ($path."appcode/possible_values.php");
 require_once ($path."appcode/data/common.php");
 
-function get_link_targets($roles2)
-		{
+function get_link_target($r)
+{
       global $subobj, $link;
-      $roles2=substr($roles2,1,strlen($roles2));
-      $roles2=explode('-',$roles2);
-      foreach($roles2 as $r) {
         $vac=0;
         if(strpos($r,'all')===false) {
           $result2=mysql_query("SELECT * FROM ".$prefix."roles WHERE site_id=".$subobj." and id=".$r);
@@ -37,7 +34,7 @@ function get_link_targets($roles2)
             while($b=mysql_fetch_array($result2)) {
                                 $result6=mysql_query("SELECT * FROM ".$prefix."users WHERE id=".$b["player_id"]);
                                 $f=mysql_fetch_array($result6);
-                                $link_target [] = '«'.decode($b["sorter"]).'» ('.usname($f,true,true).'), ';
+                                $link_target [] = '«'.decode($b["sorter"]).'» ('.usname($f,true,true).')';
             }
             return implode(', ', $link_target);
           }
@@ -51,7 +48,26 @@ function get_link_targets($roles2)
         else {
           return '<i>удаленную роль</i>';
         }
+}
+
+function get_link_targets($roles2)
+		{
+      $targets = array();
+      global $subobj, $link;
+      $roles2=substr($roles2,1,strlen($roles2));
+      $roles2=explode('-',$roles2);
+      foreach($roles2 as $r) {
+        $target = get_link_target($r);
+        if ($target)
+        {
+          $targets[] = $target;
+        }
       }
+      if (count($targets))
+      {
+        return "<b>Про " . implode(", ", $targets) . "</b>";
+      }
+      return '';
 		}
 
 session_start();
@@ -209,87 +225,14 @@ if(isset($_REQUEST["roles"])) {
 			while($c=mysql_fetch_array($result3)) {
         $all_links_list [] = $c;
 			}
-      if ($subobj == 592)
-      {
-        $estates = array();
-        foreach ($all_links_list as $c)
-        {
-
-          //IF VEDMAK MODE
-          if (substr(trim($c['sujet_name']), 0, 2) == '!!')
-          {
-            $this_link  =  '<table width=537 height=749 style="page-break-after:always;page-break-before:always;margin-top:200px;margin-bottom:200px;margin-left:50px" background="http://vedmak2014.ru/userfiles/image/pretenz.jpg">
- <tbody  >
- <tr>
-  <td valign=bottom height=270>
-  <p style="font-family: Adana script; font-size: 25; text-align: center;">Настоящим подтверждается, что</center></p>
-  </td></tr>
- <tr> <td height=110   valign=center>
-  <p style="font-family: Adana script; font-size: 40; margin-left: 120; margin-right: 120; text-align: center;"><i>[Имя роли]</i></p>
-  </td>
- </tr>
- <tr>
-  <td valign=center height=25>
-  <p style="font-family: Adana script; font-size: 25; text-align: center;">имеет <b><i>претензию</i></b> на:</center></p>
-  </td>
- </tr>
- <tr>
-  <td height=110 valign=center>
-  <p style="font-family: Adana script; font-size: 40; margin-left: 120; margin-right: 120; text-align: center;"><i>[Поместье]</i></p>
-  </td>
-  <td>
-  <p>&nbsp;</p>
-  </td>
- </tr>
- <tr>
-  <td valign=top>
-  <p style="font-size: small; text-align: right; margin-left: 120; margin-right: 100; "><i>Сертификат можно показывать, но нельзя уничтожить или отнять. При отказе от претензии отдайте сертификат региональному мастеру.<br><b>&nbsp; ИНП [ИНП]</i></b></p>
-  </td>
- </tr>
-</tbody></table>';
-          $estate_name = $c['content'];
-          $owner = strpos($estate_name, 'Владелец') !== FALSE;
-          $estate_name = str_replace("Претензия", '', $c['content']);
-          $estate_name = str_replace("(см. Правила по поместьям и титулам):", '', $estate_name);
-          $estate_name = str_replace("Владелец", '', $estate_name);
-          $estate_name = str_replace("(получает доход)", '', $estate_name);
-          $estate_name = str_replace("Владеет на начало игры", '', $estate_name);
-          $estate_name = str_replace("Поместье", '', $estate_name);
-          $estate_name = str_replace("<br>", '', $estate_name);
-
-          $this_link = str_replace('[Поместье]', $estate_name, $this_link);
-					$estates[] = $this_link;
-          }
-        }
-        if (count($estates))
-        {
-          $alllinks[] = "<span style='page-break-after:always;page-break-before:always;'>";
-          $alllinks[] = implode($estates);
-          $alllinks[] = "</span>";
-        }
-			}
 		}
 			foreach ($all_links_list as $c)
 			{
-        if ($subobj == 592)
-      {
-        if (substr(trim($c['sujet_name']), 0, 2) == '!!')
-          {
-          continue;
-          }
-      }
 				if(strpos($c["roles"],'-'.$role_id.'-')!==false || ($role_status == 3 && strpos($c["roles"],'-all'.$role_vacancy .'-')!==false)) {
-          $this_link = '<b>Про ';
-
-					if($c["hideother"]=='0') {
-						$this_link.= get_link_targets ($c['roles2']);
-					}
-					else {
-						$this_link.='<i>скрыто</i>';
-					}
-					$this_link.='</b><br>';
-					$this_link.=decode($c["content"]);
-					$alllinks[] = $this_link;
+				
+          $target = $c["hideother"] ? '' : get_link_targets ($c['roles2']);
+          $target = $target ? $target :'<b>***</b>';
+					$alllinks[] = $target . '<br>' . decode($c["content"]);
 				}
 			}
 		$rolelinks = implode('<br><br>', $alllinks);
