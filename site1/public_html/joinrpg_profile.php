@@ -14,13 +14,19 @@ $key = $_GET['key'];
 $key_to_check = sha1("$email$joinrpg_connector_secret_key");
 if ($key != $key_to_check)
 {
-  echo '{"success":false, "error":"Key is wrong!"}';
+  echo 'ERROR_WRONG_KEY';
   die();
 }
 
 $email_escaped = mysql_real_escape_string($email);
 
 $row =  db_get_row("SELECT * FROM {$prefix}users WHERE em LIKE '$email_escaped' OR em2 LIKE '$email_escaped'");
+
+if (!intval($row['sid']))
+{
+  echo 'ERROR_NO_SUCH_USER';
+  die();
+}
 
 $whitelist = array("sid", "fio", "nick", "gender", "medic", "em", "em2", "phone2", "icq", "skype", "jabber", "vkontakte", "tweeter", "livejournal", "googleplus", "facebook", "photo", "login",   "birth", "city", "sickness", "additional", "prefer", "prefer2", "prefer3", "prefer4", "specializ", "ingroup", "hidesome", "date");
 
