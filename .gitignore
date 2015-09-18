@@ -215,3 +215,4 @@ pip-log.txt
 .mr.developer.cfg
 site1/logs/error_log
 site1/logs/access_log.5
+site1/public_html/db.inc
