@@ -1,7 +1,7 @@
 ﻿<?php
-include_once("db.inc");
-include_once("classes_objects_allrpg.php");
-require_once "appcode/data/common.php";
+require_once("../db.inc");
+require_once("../classes_objects_allrpg.php");
+require_once "..//appcode/data/common.php";
 
 start_mysql();
 # Установление соединения с MySQL-сервером
