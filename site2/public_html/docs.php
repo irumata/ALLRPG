@@ -6,14 +6,13 @@ include_once($path.'db.inc');
 include_once($path.'classes_objects_allrpg.php');
 include_once($path.$direct.'/classes/classes_objects.php');
 require_once ($path."appcode/possible_values.php");
+require_once ($path."appcode/formatters.php");
 require_once ($path."appcode/data/common.php");
 
-function get_link_targets($roles2)
-		{
+function get_link_target($r)
+{
       global $subobj, $link;
-      $roles2=substr($roles2,1,strlen($roles2));
-      $roles2=explode('-',$roles2);
-      foreach($roles2 as $r) {
+      
         $vac=0;
         if(strpos($r,'all')===false) {
           $result2=mysql_query("SELECT * FROM ".$prefix."roles WHERE site_id=".$subobj." and id=".$r);
@@ -23,35 +22,56 @@ function get_link_targets($roles2)
         else {
           $vac=str_replace('all','',$r);
         }
-        $result2=mysql_query("SELECT * FROM ".$prefix."rolevacancy WHERE site_id=".$subobj." and id=".$vac);
-        $b=mysql_fetch_array($result2);
-        if($b["name"]!='') {
-          if(strpos($r,'all')!==false) {
-            $result2=mysql_query("SELECT player_id,sorter FROM ".$prefix."roles WHERE site_id=".$subobj." and vacancy=".$vac);
-          }
-          else {
-            $result2=mysql_query("SELECT player_id,sorter FROM ".$prefix."roles WHERE site_id=".$subobj." and vacancy=".$vac);
-          }
-          if(mysql_affected_rows($link)>0) {
-            $link_target = array();
-            while($b=mysql_fetch_array($result2)) {
-                                $result6=mysql_query("SELECT * FROM ".$prefix."users WHERE id=".$b["player_id"]);
-                                $f=mysql_fetch_array($result6);
-                                $link_target [] = '«'.decode($b["sorter"]).'» ('.usname($f,true,true).'), ';
-            }
-            return implode(', ', $link_target);
-          }
-          else {
-            return '«'.$b["name"].'»';
-          }
-        }
-        elseif($r==0) {
+        
+        $vac = intval ($vac);
+        
+        if (!$vac)
+        {
           return '';
         }
-        else {
-          return '<i>удаленную роль</i>';
+        
+        $result2=mysql_query("
+          SELECT name, player_id, sorter, p.*
+          FROM {$prefix}rolevacancy rv 
+          LEFT JOIN {$prefix}roles r ON r.vacancy = rv.id AND r.todelete = 0 AND r.todelete2 = 0 AND r.status=3
+          LEFT JOIN {$prefix}users p ON r.player_id = p.id
+          WHERE rv.id=$vac");
+        
+        $link_target = array();
+        while ($target_row = mysql_fetch_array($result2))
+        {
+          $player_id = $target_row['player_id'];
+          if ($player_id)
+          {
+            $link_target [] = "«".$target_row["name"] . " — " . decode($target_row["sorter"]).'» ('.name_public_compact_formatter_row($target_row).')';
+          }
+          else
+          {
+            $link_target[] = '«'.$target_row["name"].'»';
+          }
+        }
+        
+        return count($link_target) ? implode(', ', $link_target) : '<i>удаленную роль</i>';
+}
+
+function get_link_targets($roles2)
+		{
+      $targets = array();
+      global $subobj, $link;
+      $roles2=substr($roles2,1,strlen($roles2));
+      $roles2=explode('-',$roles2);
+      foreach($roles2 as $r) {
+        $target = get_link_target($r);
+        if ($target)
+        {
+          $targets[] = $target;
         }
       }
+      if (count($targets))
+      {
+        return "<b>Про " . implode(", ", $targets) . "</b>";
+      }
+      return '';
 		}
 
 session_start();
@@ -213,21 +233,10 @@ if(isset($_REQUEST["roles"])) {
 			foreach ($all_links_list as $c)
 			{
 				if(strpos($c["roles"],'-'.$role_id.'-')!==false || ($role_status == 3 && strpos($c["roles"],'-all'.$role_vacancy .'-')!==false)) {
-					if($c["hideother"]=='0') {
-            $target = trim(get_link_targets ($c['roles2']));						
-					}
-					else {
-						$target ='<i>скрыто</i>';
-					}
-					if ($target)
-          {
-            $this_link= '<b>Про ' . $target . '</b><br>';
-          }
-          else
-          {
-            $this_link = '';
-          }
-					$alllinks[] = $this_link . decode($c["content"]);
+				
+          $target = $c["hideother"] ? '' : get_link_targets ($c['roles2']);
+          $target = $target ? $target :'<b>***</b>';
+					$alllinks[] = $target . '<br>' . decode($c["content"]);
 				}
 			}
 		$rolelinks = implode('<br><br>', $alllinks);
