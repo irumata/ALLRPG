@@ -2,6 +2,7 @@
 // This file includes some code to load roles lists.
 
 require_once ($server_inner_path."appcode/data/common.php");
+require_once $server_inner_path . "libraries/classes/classes_objects.php";
 
 function load_all_roles ($site_id, $team = FALSE)
 {
