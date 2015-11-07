@@ -4,6 +4,7 @@ require_once("../db.inc");
 require_once("../classes_objects_allrpg.php");
 
 require_once '../appcode/data/roles_main.php';
+require_once '../appcode/data/roles_linked.php';
 require_once 'joinrpg_common.php';
 
 start_mysql();
@@ -15,6 +16,8 @@ $key = $_GET['key'];
 check_key($id, $key);
 
 $user_table = array();
+
+$locations = get_locations ($id);
 
 $roles = load_all_roles ($id, /*team:*/ FALSE);
 
@@ -29,6 +32,7 @@ foreach ($roles as $role)
 
 $result['project_name'] = "project$id";
 $result['users'] = array_values($user_table);
+$result['locations'] = array_values($locations);
 
 echo json_encode($result);
 ?>

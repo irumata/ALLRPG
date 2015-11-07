@@ -25,6 +25,7 @@ function get_location_path ($location_id, $site_id)
   return $names;
 }
 
+
 function get_locations_to_root ($location_id)
 {
   //TODO: implement caching
@@ -36,17 +37,36 @@ function get_locations_to_root ($location_id)
 	{
     return array();
 	}
-
+	
 		$result = db_get_row ("SELECT id, parent, name FROM {$prefix}roleslocat WHERE id=$location_id");
 		
 		if($result["id"]) {
       $return =  $result["parent"] ? get_locations_to_root ($result["parent"]) : array();
-			$return [] = array('id' => intval($result['id']), 'parent' => intval($result['parent']), 'name' => decode($result["name"]));
+             $return [] = array('id' => intval($result['id']), 'parent' => intval($result['parent']), 'name' => decode($result["name"]));
 		}
 		else {
 			return array();
 		}
 		return($return);
+}
+
+function get_locations($site_id)
+{
+  global $prefix;
+	
+	$site_id = intval ($site_id);
+	
+	if (!$site_id)
+	{
+    return array();
+	}
+
+		$result = db_query ("SELECT id, parent, name FROM {$prefix}roleslocat WHERE site_id=$site_id");
+		$locations = array();
+		while($c = mysql_fetch_array($result)) {
+      $locations[] = $c;
+		}
+return $locations;
 }
 
 function load_comments ($role_id, $site_id)
